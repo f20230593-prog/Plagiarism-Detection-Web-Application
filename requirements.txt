@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+python-multipart
+python-docx
+pdfplumber
+scikit-learn
+beautifulsoup4
+requests
+jinja2
+python-dotenv

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Plagiarism Checker</title>
+    <style>
+        :root {
+            --bg: #121212;
+            --surface: #1e1e1e;
+            --accent: #00bcd4;
+            --text: #e0e0e0;
+            --success: #4caf50;
+            --muted: #888;
+        }
+        
+        body {
+            background-color: var(--bg);
+            font-family: 'Segoe UI', sans-serif;
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 700px;
+            margin: 5vh auto;
+            background-color: var(--surface);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.4);
+            animation: fadeIn 0.8s ease-in-out;
+        }
+        
+        h1 {
+            text-align: center;
+            color: var(--accent);
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        form {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        #fileInput {
+            display: none;
+        }
+        
+        .file-input-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1rem;
+        }
+        
+        .file-label {
+            background-color: var(--accent);
+            color: #000;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .file-label:hover {
+            background-color: #008fa1;
+            transform: scale(1.03);
+        }
+        
+        #fileName {
+            font-size: 0.8rem;
+            color: var(--muted);
+            max-width: 200px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+        
+        button {
+            background-color: var(--accent);
+            color: #000;
+            font-weight: bold;
+            padding: 0.6rem 1.4rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            margin-top: 0.5rem;
+        }
+        
+        button:hover {
+            background-color: #008fa1;
+            transform: scale(1.03);
+        }
+        
+        .spinner {
+            display: none;
+            margin: 1rem auto;
+            width: 48px;
+            height: 48px;
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            border-top: 5px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .results {
+            background-color: #181818;
+            padding: 1.2rem;
+            border-radius: 8px;
+            line-height: 1.6;
+            animation: fadeInUp 0.5s ease-in-out;
+        }
+        
+        .results h2 {
+            color: var(--success);
+            margin-bottom: 0.5rem;
+        }
+        
+        .match {
+            background-color: #232323;
+            padding: 0.8rem;
+            border-left: 4px solid var(--accent);
+            margin: 0.8rem 0;
+            border-radius: 6px;
+        }
+        
+        .match a {
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .match a:hover {
+            text-decoration: underline;
+        }
+        
+        .match p {
+            margin: 0.3rem 0;
+        }
+        
+        .about {
+            margin-top: 3rem;
+            padding: 1rem 1.5rem;
+            background-color: #181818;
+            border-radius: 10px;
+            animation: fadeInUp 1s ease-in-out;
+        }
+        
+        .about h3 {
+            text-align: center;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+        
+        .profiles {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .profile {
+            background-color: #1c1c1c;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+            box-shadow: 0 0 8px var(--accent);
+            transition: all 0.3s ease;
+            max-width: 300px;
+        }
+        
+        .profile:hover {
+            background-color: #2a2a2a;
+            transform: scale(1.03);
+        }
+        
+        .profile p {
+            margin: 0.2rem 0;
+            text-align: center;
+        }
+        
+        footer {
+            text-align: center;
+            margin: 2rem 0 1rem;
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Plagiarism Checker</h1>
+        
+        <form id="uploadForm" enctype="multipart/form-data">
+            <div class="file-input-wrapper">
+                <label class="file-label" for="fileInput">Choose File</label>
+                <input type="file" id="fileInput" name="file" accept=".docx,.pdf" required />
+                <span id="fileName">No file selected</span>
+            </div>
+            <button type="submit">Check for Plagiarism</button>
+        </form>
+        
+        <div style="text-align: center; margin-top: 1rem;">
+            <a href="/static/compare.html" target="_blank">
+                <button type="button" style="background-color: #00bcd4; color: #000; font-weight: bold; padding: 0.6rem 1.4rem; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem;">
+                    Compare with PDF
+                </button>
+            </a>
+        </div>
+        
+        <div id="spinner" class="spinner"></div>
+        <div id="results" class="results" style="display:none;"></div>
+        
+        <div class="about">
+            <h3>👨‍💻 About Us</h3>
+            <div class="profiles">
+                <div class="profile">
+                    <p><strong>SUYASH MANGLA</strong></p>
+                    <p>ID NO.2023A7PS0593P</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        © Plagiarism Checker
+    </footer>
+    
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const fileNameSpan = document.getElementById('fileName');
+        
+        fileInput.addEventListener('change', () => {
+            fileNameSpan.textContent = fileInput.files.length ? fileInput.files[0].name : 'No file selected';
+        });
+        
+        document.getElementById('uploadForm').onsubmit = async (e) => {
+            e.preventDefault();
+            document.getElementById('spinner').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+            
+            const formData = new FormData(e.target);
+            const res = await fetch('/upload', { method: 'POST', body: formData });
+            const data = await res.json();
+            
+            document.getElementById('spinner').style.display = 'none';
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.style.display = 'block';
+            
+            resultsDiv.innerHTML = `
+                <h2>🔍 Average Similarity: ${data.average_similarity.toFixed(2)}%</h2>
+                ${data.matches.length === 0 
+                    ? '<p>No significant matches found. 🎉</p>' 
+                    : data.matches.map(match => `
+                        <div class="match">
+                            <p><strong>Matched Phrase:</strong> ${match.phrase}</p>
+                            <p><strong>Similarity:</strong> ${match.similarity}%</p>
+                            <a href="${match.url}" target="_blank">🔗 View Source</a>
+                        </div>
+                    `).join('')}
+            `;
+        };
+    </script>
+</body>
+</html>
